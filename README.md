@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## UX Solver
 
-## Getting Started
+Ticketing system for UX problems, built with Next.js App Router, TypeScript, Tailwind CSS, Prisma, PostgreSQL, and NextAuth.
 
-First, run the development server:
+### Quickstart
+
+1) Copy env vars
+
+```bash
+cp .env.example .env
+# update DATABASE_URL, NEXTAUTH_SECRET, DEMO_USER_PASSWORD_HASH
+```
+
+2) Install dependencies
+
+```bash
+npm install
+```
+
+3) Generate Prisma client and run migrations (adjust provider if using SQLite locally)
+
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
+4) Start the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 to use the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Authentication
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- NextAuth with Prisma Adapter.
+- Default Credentials provider reads `DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD_HASH` (bcrypt) from `.env` for a demo login.
+- Replace with your provider (OAuth/email/SAML) when ready.
 
-## Learn More
+### Ticket model (Prisma)
 
-To learn more about Next.js, take a look at the following resources:
+- `Ticket`: `id`, `title`, `description`, `priority (LOW|MEDIUM|HIGH|CRITICAL)`, `status (OPEN|IN_PROGRESS|RESOLVED|CLOSED)`, `reporterEmail`, `assignee`, timestamps.
+- Includes NextAuth tables (`User`, `Account`, `Session`, `VerificationToken`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### API routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `POST /api/tickets` – create ticket (requires DATABASE_URL).
+- `GET /api/tickets` – list tickets (falls back to demo data when DB not configured).
+- `PATCH /api/tickets/:id` – update ticket fields (requires DB).
+- `GET/POST /api/auth/[...nextauth]` – NextAuth handlers.
 
-## Deploy on Vercel
+### UI
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Dashboard at `/` with ticket stats, list, and submission form.
+- `/login` for credentials-based sign-in.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Scripts
+
+- `npm run dev` – start dev server
+- `npm run build` – production build
+- `npm run start` – start production server
+- `npm run lint` – lint codebase
+
+### Notes
+
+- Writes are blocked if `DATABASE_URL` is missing; reads fall back to demo tickets.
+- Use PostgreSQL in production; SQLite can be used locally by setting `provider = "sqlite"` and `DATABASE_URL="file:./dev.db"` in `prisma/schema.prisma` and `.env`.

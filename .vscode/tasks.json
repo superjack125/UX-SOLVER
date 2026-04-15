@@ -8,6 +8,28 @@
 			"isBackground": true,
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "stop-dev-server",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$conn = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($null -eq $conn) { Write-Output 'No process is listening on port 3000.' } else { $pid = $conn.OwningProcess; Stop-Process -Id $pid -Force; Write-Output \\\"Stopped process $pid on port 3000.\\\" }"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "stop-dev-server",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-Command",
+				"$conn = Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1; if ($null -eq $conn) { Write-Output 'No process is listening on port 3000.' } else { $procId = $conn.OwningProcess; Stop-Process -Id $procId -Force; Write-Output \\\"Stopped process $procId on port 3000.\\\" }"
+			],
+			"isBackground": false
 		}
 	]
 }

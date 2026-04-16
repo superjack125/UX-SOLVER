@@ -134,12 +134,13 @@ export function TicketForm() {
         </label>
 
         <label className="flex flex-col gap-2 text-sm text-slate-700">
-          Assignee
+          Assignee email
           <input
             className="rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            type="email"
             value={form.assignee ?? ""}
             onChange={(e) => update("assignee", e.target.value)}
-            placeholder="team or owner"
+            placeholder="assignee@example.com"
           />
         </label>
       </div>

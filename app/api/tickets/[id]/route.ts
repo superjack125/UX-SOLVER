@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteTicket, updateTicket } from "@/lib/tickets";
+import { notifyTicketUpdated } from "@/lib/notifications";
+import { deleteTicket, getTicketById, updateTicket } from "@/lib/tickets";
 import { updateTicketSchema } from "@/lib/validators";
 
 export async function PATCH(req: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -12,7 +13,17 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ id: s
   }
 
   try {
+    const before = await getTicketById(id);
+    if (!before) {
+      return NextResponse.json({ error: "Ticket not found" }, { status: 404 });
+    }
+
     const ticket = await updateTicket(id, parsed.data);
+
+    notifyTicketUpdated({ before, after: ticket }).catch((error) => {
+      console.error("Ticket update notification failed", error);
+    });
+
     return NextResponse.json(ticket, { status: 200 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update ticket";

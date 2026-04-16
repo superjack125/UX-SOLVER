@@ -129,6 +129,19 @@ export async function updateTicket(id: string, input: TicketUpdateInput): Promis
   });
 }
 
+export async function getTicketById(id: string): Promise<Ticket | null> {
+  if (!canUseDatabase()) {
+    return demoTickets.find((ticket) => ticket.id === id) ?? null;
+  }
+
+  try {
+    return await prisma.ticket.findUnique({ where: { id } });
+  } catch (error) {
+    console.error("Failed to load ticket by id", error);
+    return null;
+  }
+}
+
 export async function deleteTicket(id: string): Promise<Ticket> {
   if (!canUseDatabase()) {
     const index = demoTickets.findIndex((t) => t.id === id);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createTicket, listTickets } from "@/lib/tickets";
+import { notifyTicketCreated } from "@/lib/notifications";
 import { ticketSchema } from "@/lib/validators";
 
 export async function GET() {
@@ -16,5 +17,10 @@ export async function POST(req: Request) {
   }
 
   const ticket = await createTicket(parsed.data);
+
+  notifyTicketCreated(ticket).catch((error) => {
+    console.error("Ticket creation notification failed", error);
+  });
+
   return NextResponse.json(ticket, { status: 201 });
 }

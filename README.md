@@ -45,10 +45,27 @@ Open http://localhost:3000 to use the app.
 
 ### API routes
 
-- `POST /api/tickets` – create ticket (requires DATABASE_URL).
+- `POST /api/tickets` – create ticket.
 - `GET /api/tickets` – list tickets (falls back to demo data when DB not configured).
-- `PATCH /api/tickets/:id` – update ticket fields (requires DB).
+- `PATCH /api/tickets/:id` – update ticket fields.
 - `GET/POST /api/auth/[...nextauth]` – NextAuth handlers.
+
+### Email notifications
+
+Ticket notifications are sent on create and update when SMTP is configured.
+
+Set these environment variables:
+
+- `SMTP_HOST` (example: `smtp.gmail.com`)
+- `SMTP_PORT` (example: `587`)
+- `SMTP_FROM` (sender address, example: `UX Solver <no-reply@yourdomain.com>`)
+- `SMTP_USER` (optional, depending on provider)
+- `SMTP_PASS` (optional, depending on provider)
+
+Notification recipients are taken from ticket emails:
+
+- `reporterEmail` if it is a valid email
+- `assignee` when it contains an email address
 
 ### UI
 
@@ -64,5 +81,6 @@ Open http://localhost:3000 to use the app.
 
 ### Notes
 
-- Writes are blocked if `DATABASE_URL` is missing; reads fall back to demo tickets.
+- Writes work in both database mode and demo mode.
+- If SMTP is not configured, ticket APIs still succeed and notification sending is skipped.
 - Use PostgreSQL in production; SQLite can be used locally by setting `provider = "sqlite"` and `DATABASE_URL="file:./dev.db"` in `prisma/schema.prisma` and `.env`.
